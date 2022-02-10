@@ -1,6 +1,7 @@
-import 'package:first_app/screen/cars_list.dart';
+import 'package:first_app/database/car_database.dart';
+import 'package:first_app/screen/cars_list_page.dart';
 import 'package:flutter/material.dart';
-// import 'package:first_app/screen/cars_list.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,10 +12,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      title: 'Cars in stock',
-      home: CarListPage(),
-      debugShowCheckedModeBanner: false,
+    return Provider(
+      create: (context) => CarDatabase(),
+      child: const MaterialApp(
+        title: 'Cars in stock',
+        home: CarListPage(),
+        debugShowCheckedModeBanner: false,
+      ),
     );
   }
 }
