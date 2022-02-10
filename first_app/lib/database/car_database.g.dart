@@ -10,12 +10,12 @@ part of 'car_database.dart';
 class CarData extends DataClass implements Insertable<CarData> {
   final int id;
   final String brand;
-  final String color;
+  final int? color;
   final int mileage;
   CarData(
       {required this.id,
       required this.brand,
-      required this.color,
+      this.color,
       required this.mileage});
   factory CarData.fromData(Map<String, dynamic> data, {String? prefix}) {
     final effectivePrefix = prefix ?? '';
@@ -24,8 +24,8 @@ class CarData extends DataClass implements Insertable<CarData> {
           .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
       brand: const StringType()
           .mapFromDatabaseResponse(data['${effectivePrefix}brand'])!,
-      color: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}color'])!,
+      color: const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}color']),
       mileage: const IntType()
           .mapFromDatabaseResponse(data['${effectivePrefix}mileage'])!,
     );
@@ -35,7 +35,9 @@ class CarData extends DataClass implements Insertable<CarData> {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['brand'] = Variable<String>(brand);
-    map['color'] = Variable<String>(color);
+    if (!nullToAbsent || color != null) {
+      map['color'] = Variable<int?>(color);
+    }
     map['mileage'] = Variable<int>(mileage);
     return map;
   }
@@ -44,7 +46,8 @@ class CarData extends DataClass implements Insertable<CarData> {
     return CarCompanion(
       id: Value(id),
       brand: Value(brand),
-      color: Value(color),
+      color:
+          color == null && nullToAbsent ? const Value.absent() : Value(color),
       mileage: Value(mileage),
     );
   }
@@ -55,7 +58,7 @@ class CarData extends DataClass implements Insertable<CarData> {
     return CarData(
       id: serializer.fromJson<int>(json['id']),
       brand: serializer.fromJson<String>(json['brand']),
-      color: serializer.fromJson<String>(json['color']),
+      color: serializer.fromJson<int?>(json['color']),
       mileage: serializer.fromJson<int>(json['mileage']),
     );
   }
@@ -65,12 +68,12 @@ class CarData extends DataClass implements Insertable<CarData> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'brand': serializer.toJson<String>(brand),
-      'color': serializer.toJson<String>(color),
+      'color': serializer.toJson<int?>(color),
       'mileage': serializer.toJson<int>(mileage),
     };
   }
 
-  CarData copyWith({int? id, String? brand, String? color, int? mileage}) =>
+  CarData copyWith({int? id, String? brand, int? color, int? mileage}) =>
       CarData(
         id: id ?? this.id,
         brand: brand ?? this.brand,
@@ -103,7 +106,7 @@ class CarData extends DataClass implements Insertable<CarData> {
 class CarCompanion extends UpdateCompanion<CarData> {
   final Value<int> id;
   final Value<String> brand;
-  final Value<String> color;
+  final Value<int?> color;
   final Value<int> mileage;
   const CarCompanion({
     this.id = const Value.absent(),
@@ -114,15 +117,14 @@ class CarCompanion extends UpdateCompanion<CarData> {
   CarCompanion.insert({
     this.id = const Value.absent(),
     required String brand,
-    required String color,
+    this.color = const Value.absent(),
     required int mileage,
   })  : brand = Value(brand),
-        color = Value(color),
         mileage = Value(mileage);
   static Insertable<CarData> custom({
     Expression<int>? id,
     Expression<String>? brand,
-    Expression<String>? color,
+    Expression<int?>? color,
     Expression<int>? mileage,
   }) {
     return RawValuesInsertable({
@@ -136,7 +138,7 @@ class CarCompanion extends UpdateCompanion<CarData> {
   CarCompanion copyWith(
       {Value<int>? id,
       Value<String>? brand,
-      Value<String>? color,
+      Value<int?>? color,
       Value<int>? mileage}) {
     return CarCompanion(
       id: id ?? this.id,
@@ -156,7 +158,7 @@ class CarCompanion extends UpdateCompanion<CarData> {
       map['brand'] = Variable<String>(brand.value);
     }
     if (color.present) {
-      map['color'] = Variable<String>(color.value);
+      map['color'] = Variable<int?>(color.value);
     }
     if (mileage.present) {
       map['mileage'] = Variable<int>(mileage.value);
@@ -194,9 +196,9 @@ class $CarTable extends Car with TableInfo<$CarTable, CarData> {
       type: const StringType(), requiredDuringInsert: true);
   final VerificationMeta _colorMeta = const VerificationMeta('color');
   @override
-  late final GeneratedColumn<String?> color = GeneratedColumn<String?>(
-      'color', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+  late final GeneratedColumn<int?> color = GeneratedColumn<int?>(
+      'color', aliasedName, true,
+      type: const IntType(), requiredDuringInsert: false);
   final VerificationMeta _mileageMeta = const VerificationMeta('mileage');
   @override
   late final GeneratedColumn<int?> mileage = GeneratedColumn<int?>(
@@ -225,8 +227,6 @@ class $CarTable extends Car with TableInfo<$CarTable, CarData> {
     if (data.containsKey('color')) {
       context.handle(
           _colorMeta, color.isAcceptableOrUnknown(data['color']!, _colorMeta));
-    } else if (isInserting) {
-      context.missing(_colorMeta);
     }
     if (data.containsKey('mileage')) {
       context.handle(_mileageMeta,

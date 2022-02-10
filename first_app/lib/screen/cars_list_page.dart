@@ -1,4 +1,4 @@
-import 'package:drift/drift.dart';
+import 'package:drift/drift.dart' as dr;
 import 'package:first_app/screen/cars_detail_page.dart';
 import 'package:flutter/material.dart';
 import 'package:first_app/database/car_database.dart';
@@ -14,8 +14,7 @@ class CarListPage extends StatefulWidget {
 
 class _CarListPageState extends State<CarListPage> {
   late CarDatabase database;
-  var textInfoStyle =
-      TextStyle(fontWeight: FontWeight.bold, fontSize: 40, color: contrast2);
+
   @override
   Widget build(BuildContext context) {
     database = Provider.of<CarDatabase>(context);
@@ -59,10 +58,10 @@ class _CarListPageState extends State<CarListPage> {
           _navigateToDetail(
             "Add car",
             const CarCompanion(
-                id: Value(1),
-                brand: Value(''),
-                color: Value('white'),
-                mileage: Value(1)),
+                id: dr.Value(1),
+                brand: dr.Value(''),
+                color: dr.Value(1),
+                mileage: dr.Value(1)),
           );
         }),
         shape: CircleBorder(
@@ -82,11 +81,42 @@ class _CarListPageState extends State<CarListPage> {
   }
 
   Widget carListUI(List<CarData> carList) {
-    return Container();
+    return ListView.builder(
+      scrollDirection: Axis.vertical,
+      shrinkWrap: true,
+      itemCount: carList.length,
+      itemBuilder: (context, index) {
+        CarData carData = carList[index];
+        return Card(
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(5),
+              border: Border.all(color: Colors.black),
+            ),
+            child: Row(
+              children: [
+                // Expanded(),
+                Expanded(
+                  child: ListTile(
+                    title: Text(carData.brand),
+                  ),
+                ),
+                Expanded(
+                  child: ListTile(
+                    title: Text(carData.mileage.toString() + " km"),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
-  void _navigateToDetail(String title, CarCompanion carCompanion) {
-    Navigator.push(
+  _navigateToDetail(String title, CarCompanion carCompanion) async {
+    var res = await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => CarDetailPage(
@@ -95,5 +125,8 @@ class _CarListPageState extends State<CarListPage> {
         ),
       ),
     );
+    if (res != null && res == true) {
+      setState(() {});
+    }
   }
 }

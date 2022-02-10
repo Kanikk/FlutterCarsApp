@@ -3,7 +3,6 @@ import 'package:first_app/screen/cars_list_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-
 void main() {
   runApp(const MyApp());
 }
