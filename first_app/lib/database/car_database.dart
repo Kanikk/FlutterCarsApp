@@ -32,7 +32,19 @@ class CarDatabase extends _$CarDatabase {
     return await select(car).get();
   }
 
+  // Insert
   Future<int> insertCar(CarCompanion carCompanion) async {
     return await into(car).insert(carCompanion);
+  }
+
+  // Delete
+  Future<int> deleteCar(CarData carData) async {
+    return await delete(car).delete(carData);
+  }
+
+  //Update
+
+  Future<bool> updateCar(CarData carData) async {
+    return await update(car).replace(carData);
   }
 }
