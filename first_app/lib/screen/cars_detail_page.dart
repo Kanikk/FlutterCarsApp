@@ -1,18 +1,19 @@
 import 'package:first_app/database/car_database.dart';
 import 'package:first_app/theme/appThemes.dart';
+import 'package:first_app/widgets/color_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
 import 'package:drift/drift.dart' as dr;
 
 class CarDetailPage extends StatefulWidget {
+  final String title;
+  final CarCompanion carCompanion;
   const CarDetailPage({
     Key? key,
     required this.carCompanion,
     required this.title,
   }) : super(key: key);
-  final String title;
-  final CarCompanion carCompanion;
   @override
   _CarDetailPageState createState() => _CarDetailPageState();
 }
@@ -20,6 +21,7 @@ class CarDetailPage extends StatefulWidget {
 class _CarDetailPageState extends State<CarDetailPage> {
   late CarDatabase carDatabase;
   late TextEditingController mileageEditingcontroller;
+  int color = 0;
 
   @override
   void initState() {
@@ -27,6 +29,7 @@ class _CarDetailPageState extends State<CarDetailPage> {
     mileageEditingcontroller = TextEditingController();
     mileageEditingcontroller.text =
         widget.carCompanion.mileage.value.toString();
+    color = widget.carCompanion.color.value!;
   }
 
   @override
@@ -37,13 +40,28 @@ class _CarDetailPageState extends State<CarDetailPage> {
       body: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
         child: Column(children: [
+          ColorPicker(
+              index: color,
+              onTap: (selectedColor) {
+                color = selectedColor;
+                setState(() {});
+              }),
+          const SizedBox(
+            height: 20,
+          ),
           TextFormField(
             controller: mileageEditingcontroller,
+            maxLength: 6,
             keyboardType: TextInputType.number,
             inputFormatters: <TextInputFormatter>[
               FilteringTextInputFormatter.digitsOnly
             ],
             decoration: InputDecoration(
+                labelText: "Mileage",
+                prefixIcon: const Icon(
+                  Icons.call_made,
+                  color: Colors.black,
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -53,6 +71,8 @@ class _CarDetailPageState extends State<CarDetailPage> {
       ),
     );
   }
+
+//    Visual section
 
   _getDetailAppBar() {
     return AppBar(
@@ -80,7 +100,9 @@ class _CarDetailPageState extends State<CarDetailPage> {
           ),
         ),
         IconButton(
-          onPressed: () {},
+          onPressed: () {
+            _deleteCar();
+          },
           icon: Icon(
             Icons.delete,
             color: contrast2,
@@ -90,17 +112,76 @@ class _CarDetailPageState extends State<CarDetailPage> {
     );
   }
 
+//    Database section
+
   void _saveToDb() {
-    carDatabase
-        .insertCar(CarCompanion(
-      mileage: dr.Value(
-        int.parse(mileageEditingcontroller.text),
-      ),
-      color: dr.Value(1),
-      brand: dr.Value("BMW"),
-    ))
-        .then((value) {
-      Navigator.pop(context, true);
-    });
+    if (widget.carCompanion.id.present) {
+      carDatabase
+          .updateCar(
+        CarData(
+          id: widget.carCompanion.id.value,
+          brand: "BMW",
+          mileage: int.parse(mileageEditingcontroller.text),
+          color: color,
+        ),
+      )
+          .then(
+        (value) {
+          Navigator.pop(context, true);
+        },
+      );
+    } else {
+      carDatabase
+          .insertCar(
+        CarCompanion(
+          mileage: dr.Value(
+            int.parse(mileageEditingcontroller.text),
+          ),
+          color: dr.Value(color),
+          brand: dr.Value("BMW"),
+        ),
+      )
+          .then(
+        (value) {
+          Navigator.pop(context, true);
+        },
+      );
+    }
+  }
+
+  void _deleteCar() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Delete Car?'),
+          content: const Text('Do you want to delete this car?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                carDatabase
+                    .deleteCar(CarData(
+                  id: widget.carCompanion.id.value,
+                  brand: widget.carCompanion.brand.value,
+                  mileage: widget.carCompanion.mileage.value,
+                  color: widget.carCompanion.color.value,
+                ))
+                    .then((value) {
+                  Navigator.pop(context, true);
+                });
+              },
+              child: const Text("Delete"),
+            ),
+          ],
+        );
+      },
+    );
   }
 }

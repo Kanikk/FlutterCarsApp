@@ -1,9 +1,11 @@
-import 'package:drift/drift.dart' as dr;
-import 'package:first_app/screen/cars_detail_page.dart';
 import 'package:flutter/material.dart';
-import 'package:first_app/database/car_database.dart';
+import 'dart:math' as math;
+import 'package:drift/drift.dart' as dr;
 import 'package:provider/provider.dart';
+import 'package:first_app/screen/cars_detail_page.dart';
 import 'package:first_app/theme/appThemes.dart';
+import 'package:first_app/database/car_database.dart';
+import 'package:first_app/widgets/color_picker.dart';
 
 class CarListPage extends StatefulWidget {
   const CarListPage({Key? key}) : super(key: key);
@@ -25,7 +27,20 @@ class _CarListPageState extends State<CarListPage> {
           "Aplikacja samochodowa",
           style: TextStyle(color: contrast2),
         ),
-        centerTitle: true,
+        actions: [
+          Transform.rotate(
+            angle: 35 * math.pi / 180,
+            child: IconButton(
+              onPressed: () {
+                // _changeColor();
+              },
+              icon: Icon(
+                Icons.brightness_2_rounded,
+                color: contrast2,
+              ),
+            ),
+          ),
+        ],
       ),
       body: FutureBuilder<List<CarData>>(
         future: _getCarFromDatabase(),
@@ -58,14 +73,11 @@ class _CarListPageState extends State<CarListPage> {
           _navigateToDetail(
             "Add car",
             const CarCompanion(
-                id: dr.Value(1),
-                brand: dr.Value(''),
-                color: dr.Value(1),
-                mileage: dr.Value(1)),
+                brand: dr.Value(''), color: dr.Value(0), mileage: dr.Value(0)),
           );
         }),
         shape: CircleBorder(
-          side: BorderSide(color: contrast2, width: 3),
+          side: BorderSide(color: contrast2, width: 1.2),
         ),
         backgroundColor: contrast1,
         child: Icon(
@@ -87,27 +99,63 @@ class _CarListPageState extends State<CarListPage> {
       itemCount: carList.length,
       itemBuilder: (context, index) {
         CarData carData = carList[index];
-        return Card(
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(5),
-              border: Border.all(color: Colors.black),
-            ),
-            child: Row(
-              children: [
-                // Expanded(),
-                Expanded(
-                  child: ListTile(
-                    title: Text(carData.brand),
+        return InkWell(
+          onTap: () {
+            _navigateToDetail(
+              "Edit Car",
+              CarCompanion(
+                id: dr.Value(carData.id),
+                brand: dr.Value(carData.brand),
+                mileage: dr.Value(carData.mileage),
+                color: dr.Value(carData.color),
+              ),
+            );
+          },
+          child: Card(
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(5),
+                border: Border.all(color: Colors.black),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: ListTile(
+                      trailing: Container(
+                        padding: const EdgeInsets.fromLTRB(0, 5, 0, 15),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text("Color"),
+                            Container(
+                              color: colors[carData.color!],
+                              width: 15,
+                              height: 15,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-                Expanded(
-                  child: ListTile(
-                    title: Text(carData.mileage.toString() + " km"),
+                  Expanded(
+                    flex: 2,
+                    child: ListTile(
+                      title: Text("Brand: " + carData.brand),
+                    ),
                   ),
-                ),
-              ],
+                  Expanded(
+                    flex: 2,
+                    child: ListTile(
+                      title: Text(carData.mileage.toString() + " km"),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         );
@@ -127,6 +175,21 @@ class _CarListPageState extends State<CarListPage> {
     );
     if (res != null && res == true) {
       setState(() {});
+    }
+  }
+
+  _getColor(int parameter) {
+    switch (parameter) {
+      case 1:
+        return Colors.red;
+      case 2:
+        return Colors.blue;
+      case 3:
+        return Colors.amber;
+      case 4:
+        return Colors.black;
+      default:
+        return Colors.green;
     }
   }
 }
