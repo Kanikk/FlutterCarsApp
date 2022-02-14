@@ -1,9 +1,9 @@
+import 'package:first_app/widgets/change_theme_button_widget.dart';
 import 'package:flutter/material.dart';
-import 'dart:math' as math;
+// import 'dart:math' as math;
 import 'package:drift/drift.dart' as dr;
 import 'package:provider/provider.dart';
 import 'package:first_app/screen/cars_detail_page.dart';
-import 'package:first_app/theme/appThemes.dart';
 import 'package:first_app/database/car_database.dart';
 import 'package:first_app/widgets/color_picker.dart';
 
@@ -22,24 +22,20 @@ class _CarListPageState extends State<CarListPage> {
     database = Provider.of<CarDatabase>(context);
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: contrast1,
-        title: Text(
+        title: const Text(
           "Aplikacja samochodowa",
-          style: TextStyle(color: contrast2),
         ),
         actions: [
-          Transform.rotate(
-            angle: 35 * math.pi / 180,
-            child: IconButton(
-              onPressed: () {
-                // _changeColor();
-              },
-              icon: Icon(
-                Icons.brightness_2_rounded,
-                color: contrast2,
-              ),
-            ),
-          ),
+          ChangeThemeButtonWidget(),
+          // Transform.rotate(
+          //   angle: 35 * math.pi / 180,
+          //   child: IconButton(
+          //     onPressed: () {},
+          //     icon: const Icon(
+          //       Icons.brightness_2_rounded,
+          //     ),
+          //   ),
+          // ),
         ],
       ),
       body: FutureBuilder<List<CarData>>(
@@ -49,10 +45,9 @@ class _CarListPageState extends State<CarListPage> {
             List<CarData>? carList = snapshot.data;
             if (carList != null) {
               if (carList.isEmpty) {
-                return Center(
+                return const Center(
                     child: Text(
                   'No cars found',
-                  style: textInfoStyle,
                 ));
               } else {
                 return carListUI(carList);
@@ -61,10 +56,9 @@ class _CarListPageState extends State<CarListPage> {
           } else if (snapshot.hasError) {
             return Center(child: Text(snapshot.error.toString()));
           }
-          return Center(
+          return const Center(
               child: Text(
             'Click on add button to add new car',
-            style: textInfoStyle,
           ));
         }),
       ),
@@ -76,13 +70,11 @@ class _CarListPageState extends State<CarListPage> {
                 brand: dr.Value(''), color: dr.Value(0), mileage: dr.Value(0)),
           );
         }),
-        shape: CircleBorder(
-          side: BorderSide(color: contrast2, width: 1.2),
+        shape: const CircleBorder(
+          side: BorderSide(width: 1.2),
         ),
-        backgroundColor: contrast1,
-        child: Icon(
+        child: const Icon(
           Icons.add,
-          color: contrast2,
         ),
       ),
     );
@@ -175,21 +167,6 @@ class _CarListPageState extends State<CarListPage> {
     );
     if (res != null && res == true) {
       setState(() {});
-    }
-  }
-
-  _getColor(int parameter) {
-    switch (parameter) {
-      case 1:
-        return Colors.red;
-      case 2:
-        return Colors.blue;
-      case 3:
-        return Colors.amber;
-      case 4:
-        return Colors.black;
-      default:
-        return Colors.green;
     }
   }
 }
