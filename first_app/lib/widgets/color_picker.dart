@@ -1,4 +1,3 @@
-import 'package:first_app/theme/appThemes.dart';
 import 'package:flutter/material.dart';
 
 List<Color> colors = const [
@@ -8,6 +7,7 @@ List<Color> colors = const [
   Colors.black,
 ];
 
+// ignore: must_be_immutable
 class ColorPicker extends StatefulWidget {
   int index;
   final Function(int) onTap;
@@ -42,13 +42,13 @@ class _ColorPickerState extends State<ColorPicker> {
                   height: 30,
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(15),
-                      border: Border.all(color: contrast2, width: 2),
+                      border: Border.all(width: 2),
                       color: colors[index]),
                 ),
                 widget.index == index
                     ? Icon(
                         Icons.check,
-                        color: contrast2,
+                        color: Theme.of(context).primaryColor,
                       )
                     : Container()
               ],

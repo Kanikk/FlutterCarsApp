@@ -1,5 +1,4 @@
 import 'package:first_app/database/car_database.dart';
-import 'package:first_app/theme/appThemes.dart';
 import 'package:first_app/widgets/color_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -60,7 +59,6 @@ class _CarDetailPageState extends State<CarDetailPage> {
                 labelText: "Mileage",
                 prefixIcon: const Icon(
                   Icons.call_made,
-                  color: Colors.black,
                 ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -76,36 +74,31 @@ class _CarDetailPageState extends State<CarDetailPage> {
 
   _getDetailAppBar() {
     return AppBar(
-      backgroundColor: contrast1,
       leading: IconButton(
           onPressed: () {
             Navigator.pop(context);
           },
-          icon: Icon(
+          icon: const Icon(
             Icons.chevron_left_outlined,
-            color: contrast2,
           )),
       title: Text(
         widget.title,
-        style: TextStyle(color: contrast2),
       ),
       actions: [
         IconButton(
           onPressed: () {
             _saveToDb();
           },
-          icon: Icon(
+          icon: const Icon(
             Icons.save,
-            color: contrast2,
           ),
         ),
         IconButton(
           onPressed: () {
             _deleteCar();
           },
-          icon: Icon(
+          icon: const Icon(
             Icons.delete,
-            color: contrast2,
           ),
         ),
       ],
