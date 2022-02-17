@@ -3,7 +3,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 import 'package:drift/drift.dart';
 import 'dart:io';
-
 part 'car_database.g.dart';
 
 class Car extends Table {
@@ -11,6 +10,26 @@ class Car extends Table {
   TextColumn get brand => text()();
   IntColumn get color => integer().nullable()();
   IntColumn get mileage => integer()();
+}
+
+enum CarBrand {
+  bmw,
+  ford,
+  kiwi,
+}
+
+extension CarBrandExtension on CarBrand {
+  String get changeToString {
+    // switch (this) {
+    //   case CarBrand.bmw:
+    //     return "BMW";
+    //   case CarBrand.kiwi:
+    //     return "Kiwi";
+    //   case CarBrand.ford:
+    //     return "Ford";
+    // }
+    return this.toString().replaceFirst("CarBrand.", "").toUpperCase();
+  }
 }
 
 LazyDatabase _openConnection() {

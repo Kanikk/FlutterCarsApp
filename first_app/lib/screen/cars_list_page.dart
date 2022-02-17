@@ -18,14 +18,19 @@ class _CarListPageState extends State<CarListPage> {
   late CarDatabase database;
 
   @override
+  void initState() {
+    super.initState();
+    database = context.read<CarDatabase>();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    database = Provider.of<CarDatabase>(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text(
           "Aplikacja samochodowa",
         ),
-        actions: [
+        actions: const [
           ChangeThemeButtonWidget(),
           // Transform.rotate(
           //   angle: 35 * math.pi / 180,
