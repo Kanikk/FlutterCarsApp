@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class ThemeProvider extends ChangeNotifier {
-   ThemeMode themeMode = ThemeMode.system;
+  ThemeMode themeMode = ThemeMode.system;
 
   bool get isDarkMode {
     if (themeMode == ThemeMode.system) {
@@ -35,6 +34,4 @@ class AppThemes {
     primaryColor: Colors.white,
     colorScheme: const ColorScheme.light(),
   );
-
-  
 }

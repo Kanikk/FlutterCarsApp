@@ -29,7 +29,6 @@ class MyApp extends StatelessWidget {
       ],
       builder: (context, _) {
         final themeProvider = Provider.of<ThemeProvider>(context);
-        ;
         return MaterialApp(
           title: 'Cars in stock',
           home: const CarListPage(),

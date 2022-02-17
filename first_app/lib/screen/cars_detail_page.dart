@@ -21,6 +21,7 @@ class _CarDetailPageState extends State<CarDetailPage> {
   late CarDatabase carDatabase;
   late TextEditingController mileageEditingcontroller;
   int color = 0;
+  String brand = CarBrand.bmw.changeToString;
 
   @override
   void initState() {
@@ -48,6 +49,39 @@ class _CarDetailPageState extends State<CarDetailPage> {
           const SizedBox(
             height: 20,
           ),
+          Container(
+            width: (MediaQuery.of(context).size.width),
+            height: 75,
+            decoration: BoxDecoration(
+              border: Border.all(),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const Text("Pick brand: "),
+                ElevatedButton(
+                    onPressed: (() {
+                      brand = CarBrand.bmw.changeToString;
+                    }),
+                    child: Text(CarBrand.bmw.changeToString)),
+                ElevatedButton(
+                    onPressed: (() {
+                      brand = CarBrand.ford.changeToString;
+                    }),
+                    child: Text(CarBrand.ford.changeToString)),
+                ElevatedButton(
+                    onPressed: (() {
+                      brand = CarBrand.kiwi.changeToString;
+                    }),
+                    child: Text(CarBrand.kiwi.changeToString)),
+              ],
+            ),
+          ),
+          const SizedBox(
+            height: 20,
+          ),
           TextFormField(
             controller: mileageEditingcontroller,
             maxLength: 6,
@@ -64,7 +98,7 @@ class _CarDetailPageState extends State<CarDetailPage> {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 hintText: "Enter mileage"),
-          )
+          ),
         ]),
       ),
     );
@@ -113,7 +147,7 @@ class _CarDetailPageState extends State<CarDetailPage> {
           .updateCar(
         CarData(
           id: widget.carCompanion.id.value,
-          brand: "BMW",
+          brand: brand,
           mileage: int.parse(mileageEditingcontroller.text),
           color: color,
         ),
@@ -131,7 +165,7 @@ class _CarDetailPageState extends State<CarDetailPage> {
             int.parse(mileageEditingcontroller.text),
           ),
           color: dr.Value(color),
-          brand: dr.Value("BMW"),
+          brand: dr.Value(brand),
         ),
       )
           .then(
